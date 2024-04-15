@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'settings_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +33,13 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       debugShowCheckedModeBanner: false,
-      home: const StopwatchPage(title: 'SalaryWatch'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const StopwatchPage(
+              title: 'SalaryWatch',
+            ),
+        '/settings': (context) => const SettingsPage(currentHourlyWage: 1200,),
+      },
     );
   }
 }
@@ -100,6 +107,24 @@ class StopwatchPageState extends State<StopwatchPage> {
     });
   }
 
+  void _navigateToSettings() async {
+    // Navigator.pushNamed で SettingsPage を開き、戻るときに新しい時給を受け取る
+    final result = await Navigator.pushNamed(
+      context,
+      '/settings',
+      arguments: hourlyWage,
+    );
+
+    // キャストしてint型に変換
+    if (result is int) {
+      // 新しい時給を設定
+      setState(() {
+        hourlyWage = result;
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // 端末のロケール情報を取得
@@ -114,6 +139,12 @@ class StopwatchPageState extends State<StopwatchPage> {
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: _navigateToSettings, // 設定ページへのナビゲーション
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
