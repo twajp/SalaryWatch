@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:salarywatch/save_settings.dart';
 import 'settings_page.dart';
 
 void main() {
@@ -31,14 +32,17 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: Colors.green,
         useMaterial3: true,
         brightness: Brightness.dark,
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontSize: 32, ),
+          bodyMedium: TextStyle(fontSize: 14, fontFamily: 'Hind'),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => const StopwatchPage(
-              title: 'SalaryWatch',
-            ),
-        '/settings': (context) => const SettingsPage(currentHourlyWage: 1200,),
+        '/': (BuildContext context) =>
+            const StopwatchPage(title: 'SalaryWatch'),
+        '/settings': (BuildContext context) => const SettingsPage(title: '設定'),
       },
     );
   }
@@ -59,11 +63,16 @@ class StopwatchPageState extends State<StopwatchPage> {
   Duration _elapsed = Duration.zero;
   DateTime _currentTime = DateTime.now();
   bool _isRunning = false;
-  int hourlyWage = 1200;
+  int hourlyWage = 0;
 
   @override
   void initState() {
     super.initState();
+    loadHourlyWage().then((wage) {
+      setState(() {
+        hourlyWage = wage;
+      });
+    });
     // 時計用のタイマーを設定して1秒ごとに更新
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -108,13 +117,13 @@ class StopwatchPageState extends State<StopwatchPage> {
   }
 
   void _navigateToSettings() async {
-    // Navigator.pushNamed で SettingsPage を開き、戻るときに新しい時給を受け取る
-    final result = await Navigator.pushNamed(
-      context,
-      '/settings',
-      arguments: hourlyWage,
+    RouteSettings settings = RouteSettings(arguments: hourlyWage);
+    var result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        settings: settings,
+        builder: (context) => const SettingsPage(title: '設定'),
+      ),
     );
-
     // キャストしてint型に変換
     if (result is int) {
       // 新しい時給を設定
@@ -123,7 +132,6 @@ class StopwatchPageState extends State<StopwatchPage> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +157,7 @@ class StopwatchPageState extends State<StopwatchPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const Expanded(child:SizedBox()),
           Text(
             '${_elapsed.inHours.toString().padLeft(2, '0')}:'
             '${(_elapsed.inMinutes % 60).toString().padLeft(2, '0')}:'
@@ -160,7 +169,7 @@ class StopwatchPageState extends State<StopwatchPage> {
           Text(
             '$currencySymbol'
             '${format.format((_elapsed.inMilliseconds * (hourlyWage / 60 / 60 / 1000)))}',
-            style: const TextStyle(fontSize: 36),
+            style: const TextStyle(fontSize: 64),
           ),
           const SizedBox(height: 20),
           Row(
@@ -177,6 +186,15 @@ class StopwatchPageState extends State<StopwatchPage> {
               ),
             ],
           ),
+          const Expanded(child:SizedBox()),
+          Text(
+            // '$currentLocale'
+            // '${currentLocale.countryCode}'
+            '$currencySymbol'
+                '$hourlyWage/h',
+            style: const TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
