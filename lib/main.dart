@@ -24,24 +24,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'SalaryWatch',
       theme: ThemeData(
-        colorSchemeSeed: Colors.green,
         useMaterial3: true,
         brightness: Brightness.light,
+        colorSchemeSeed: Colors.green,
       ),
       darkTheme: ThemeData(
-        colorSchemeSeed: Colors.green,
         useMaterial3: true,
         brightness: Brightness.dark,
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(fontSize: 32, ),
-          bodyMedium: TextStyle(fontSize: 14, fontFamily: 'Hind'),
-        ),
+        colorSchemeSeed: Colors.green,
+        // textTheme: const TextTheme(
+        // displayLarge: TextStyle(fontSize: 64), // 金額表示
+        // bodyMedium: TextStyle(fontSize: 14, fontFamily: 'Hind'),
+        // ),
       ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (BuildContext context) =>
-            const StopwatchPage(title: 'SalaryWatch'),
+        '/': (BuildContext context) => const StopwatchPage(title: 'SalaryWatch'),
         '/settings': (BuildContext context) => const SettingsPage(title: '設定'),
       },
     );
@@ -63,14 +62,14 @@ class StopwatchPageState extends State<StopwatchPage> {
   Duration _elapsed = Duration.zero;
   DateTime _currentTime = DateTime.now();
   bool _isRunning = false;
-  int hourlyWage = 0;
+  double hourlyWage = 0;
 
   @override
   void initState() {
     super.initState();
     loadHourlyWage().then((wage) {
       setState(() {
-        hourlyWage = wage;
+        hourlyWage = wage as double;
       });
     });
     // 時計用のタイマーを設定して1秒ごとに更新
@@ -95,8 +94,7 @@ class StopwatchPageState extends State<StopwatchPage> {
       _stopwatchTimer?.cancel();
     } else {
       // ストップウォッチが停止している場合、開始
-      _stopwatchTimer =
-          Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      _stopwatchTimer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
         setState(() {
           _elapsed += const Duration(milliseconds: 10);
         });
@@ -128,7 +126,7 @@ class StopwatchPageState extends State<StopwatchPage> {
     if (result is int) {
       // 新しい時給を設定
       setState(() {
-        hourlyWage = result;
+        hourlyWage = result as double;
       });
     }
   }
@@ -138,11 +136,9 @@ class StopwatchPageState extends State<StopwatchPage> {
     // 端末のロケール情報を取得
     final Locale currentLocale = Localizations.localeOf(context);
     // 通貨マークを取得
-    String currencySymbol =
-        NumberFormat.simpleCurrency(locale: currentLocale.toString())
-            .currencySymbol;
+    String currencySymbol = NumberFormat.simpleCurrency(locale: currentLocale.toString()).currencySymbol;
     NumberFormat format = NumberFormat("#,##0.00");
-
+    print(Intl.defaultLocale);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -157,7 +153,7 @@ class StopwatchPageState extends State<StopwatchPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Expanded(child:SizedBox()),
+          const Expanded(child: SizedBox()),
           Text(
             '${_elapsed.inHours.toString().padLeft(2, '0')}:'
             '${(_elapsed.inMinutes % 60).toString().padLeft(2, '0')}:'
@@ -169,7 +165,7 @@ class StopwatchPageState extends State<StopwatchPage> {
           Text(
             '$currencySymbol'
             '${format.format((_elapsed.inMilliseconds * (hourlyWage / 60 / 60 / 1000)))}',
-            style: const TextStyle(fontSize: 64),
+            style: Theme.of(context).textTheme.displayLarge,
           ),
           const SizedBox(height: 20),
           Row(
@@ -186,13 +182,18 @@ class StopwatchPageState extends State<StopwatchPage> {
               ),
             ],
           ),
-          const Expanded(child:SizedBox()),
+          const Expanded(child: SizedBox()),
+          // Text(
+          //   // '$currentLocale'
+          //   // '${currentLocale.countryCode}'
+          //   '$currencySymbol'
+          //   '$hourlyWage/h',
+          //   style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 18),
+          // ),
           Text(
-            // '$currentLocale'
-            // '${currentLocale.countryCode}'
-            '$currencySymbol'
-                '$hourlyWage/h',
-            style: const TextStyle(fontSize: 18),
+            '${NumberFormat.simpleCurrency(locale: 'ja_JP').format(hourlyWage)}'
+            '/h',
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 18),
           ),
           const SizedBox(height: 20),
         ],
