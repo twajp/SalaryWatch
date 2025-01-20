@@ -10,7 +10,7 @@ Future<void> saveHourlyWage(int hourlyWage) async {
 }
 
 // 時給を読み込む関数
-Future<int> loadHourlyWage() async {
+Future<double> loadHourlyWage() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getInt(hourlyWageKey) ?? 1200; // 初期値は1200
+  return prefs.getInt(hourlyWageKey)?.toDouble() ?? 1200.0; // 初期値は1200.0
 }

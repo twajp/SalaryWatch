@@ -31,7 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
     // 入力された時給を取得
     final newHourlyWage = double.parse(_wageController.text);
     // 時給をストレージに保存
-    await saveHourlyWage(newHourlyWage as int);
+    await saveHourlyWage(newHourlyWage.toInt());
     // Navigator.pop()で戻る際に新しい時給を渡す
     Navigator.pop(context, newHourlyWage);
   }

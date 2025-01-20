@@ -69,7 +69,7 @@ class StopwatchPageState extends State<StopwatchPage> {
     super.initState();
     loadHourlyWage().then((wage) {
       setState(() {
-        hourlyWage = wage as double;
+        hourlyWage = wage;
       });
     });
     // 時計用のタイマーを設定して1秒ごとに更新
