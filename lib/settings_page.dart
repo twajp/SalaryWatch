@@ -31,9 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
     // 入力された時給を取得
     final newHourlyWage = double.parse(_wageController.text);
     // 時給をストレージに保存
-    await saveHourlyWage(newHourlyWage.toInt());
-    // Navigator.pop()で戻る際に新しい時給を渡す
-    Navigator.pop(context, newHourlyWage);
+    await saveHourlyWage(newHourlyWage);
   }
 
   @override
@@ -91,16 +89,21 @@ class _SettingsPageState extends State<SettingsPage> {
                           textAlign: TextAlign.right,
                           controller: _wageController,
                           keyboardType: TextInputType.number,
+                          onChanged: (value) async {
+                            // Save the value automatically
+                            if (value.isNotEmpty) {
+                              try {
+                                _saveSettings();
+                              } catch (e) {
+                                // Handle invalid input gracefully
+                                debugPrint('Invalid input: $value');
+                              }
+                            }
+                          },
                         ),
                       )
                     ],
                   ),
-                ),
-              ),
-              CustomSettingsTile(
-                child: ElevatedButton(
-                  onPressed: _saveSettings,
-                  child: const Text('保存'),
                 ),
               ),
             ],

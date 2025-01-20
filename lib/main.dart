@@ -132,13 +132,12 @@ class StopwatchPageState extends State<StopwatchPage> {
         builder: (context) => const SettingsPage(title: '設定'),
       ),
     );
-    // キャストしてint型に変換
-    if (result is int) {
-      // 新しい時給を設定
+    // 設定画面から戻った後、最新の時給を再ロード
+    loadHourlyWage().then((wage) {
       setState(() {
-        hourlyWage = result as double;
+        hourlyWage = wage;
       });
-    }
+    });
   }
 
   @override
