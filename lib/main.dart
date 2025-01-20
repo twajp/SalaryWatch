@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -43,6 +44,15 @@ class MyApp extends StatelessWidget {
         '/': (BuildContext context) => const StopwatchPage(title: 'SalaryWatch'),
         '/settings': (BuildContext context) => const SettingsPage(title: '設定'),
       },
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en'),
+        Locale('ja'),
+      ],
     );
   }
 }
@@ -135,10 +145,32 @@ class StopwatchPageState extends State<StopwatchPage> {
   Widget build(BuildContext context) {
     // 端末のロケール情報を取得
     final Locale currentLocale = Localizations.localeOf(context);
-    // 通貨マークを取得
-    String currencySymbol = NumberFormat.simpleCurrency(locale: currentLocale.toString()).currencySymbol;
-    NumberFormat format = NumberFormat("#,##0.00");
-    print(Intl.defaultLocale);
+
+    // ストップウォッチ下の金額表示用フォーマッタ
+    final NumberFormat detailedFormatter = NumberFormat.currency(
+      locale: currentLocale.toString(),
+      symbol: '',
+    );
+    detailedFormatter
+      ..minimumFractionDigits = currentLocale.languageCode == 'ja' ? 2 : 4
+      ..maximumFractionDigits = currentLocale.languageCode == 'ja' ? 2 : 4;
+
+    // 一番下の/h表示用フォーマッタ（通常の小数点以下2桁）
+    final NumberFormat standardFormatter = NumberFormat.simpleCurrency(
+      locale: currentLocale.toString(),
+    );
+
+    // ストップウォッチ下の金額をフォーマット
+    final String detailedAmount = detailedFormatter.format(
+      _elapsed.inMilliseconds * (hourlyWage / 3600000),
+    );
+
+    // 一番下の/h表示用の金額をフォーマット
+    final String standardHourlyWage = standardFormatter.format(hourlyWage);
+
+    // 通貨記号
+    final String currencySymbol = standardFormatter.currencySymbol;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -163,8 +195,7 @@ class StopwatchPageState extends State<StopwatchPage> {
           ),
           const SizedBox(height: 20),
           Text(
-            '$currencySymbol'
-            '${format.format((_elapsed.inMilliseconds * (hourlyWage / 60 / 60 / 1000)))}',
+            '$currencySymbol$detailedAmount',
             style: Theme.of(context).textTheme.displayLarge,
           ),
           const SizedBox(height: 20),
@@ -191,8 +222,7 @@ class StopwatchPageState extends State<StopwatchPage> {
           //   style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 18),
           // ),
           Text(
-            '${NumberFormat.simpleCurrency(locale: 'ja_JP').format(hourlyWage)}'
-            '/h',
+            '$standardHourlyWage/h',
             style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 18),
           ),
           const SizedBox(height: 20),
