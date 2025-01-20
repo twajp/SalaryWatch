@@ -1,4 +1,4 @@
-package jp.twa.salarywatch.salarywatch
+package jp.twa.salarywatch
 
 import io.flutter.embedding.android.FlutterActivity
 

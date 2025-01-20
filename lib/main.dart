@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:salarywatch/save_settings.dart';
+import 'save_settings.dart';
 import 'settings_page.dart';
 
 void main() {
