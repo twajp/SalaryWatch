@@ -1,16 +1,13 @@
-# salarywatch
+# SalaryWatch
 
-A new Flutter project.
+**SalaryWatch** は、働いた時間に基づいてリアルタイムで収益を計算するシンプルで直感的なアプリです。ユーザーは時給を設定し、ストップウォッチで作業時間を追跡することで、瞬時に収益を確認できます。
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 特徴
+- **リアルタイム収益計算**  
+  入力した時給と経過時間を基に、収益をリアルタイムで計算して表示します。
+- **設定のカスタマイズ**  
+  設定画面で時給を簡単に入力・保存できます。
+- **多言語対応**  
+  日本語と英語をサポートしています。
+- **テーマ選択**  
+  ライトテーマとダークテーマに対応し、快適なユーザー体験を提供します。
